@@ -134,7 +134,7 @@ def ddp_main(rank, world_size, args):
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
     my_auto_wrap_policy = functools.partial(
-            default_auto_wrap_policy, min_num_params=100
+            default_auto_wrap_policy, min_num_params=20000
         )
     torch.cuda.set_device(rank)
    
@@ -147,6 +147,10 @@ def ddp_main(rank, world_size, args):
     model = Net().to(rank)
 
     model = FSDP(model)
+
+    # model = FSDP(model,
+    #     fsdp_auto_wrap_policy=my_auto_wrap_policy,
+    #     cpu_offload=CPUOffload(offload_params=True))
 
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
@@ -163,8 +167,11 @@ def ddp_main(rank, world_size, args):
         print(f"Cuda event elapsed time: {init_start_event.elapsed_time(init_end_event) / 1000}sec")
         print(f"{model}")
 
-    if args.save_model and rank == 0:
-        torch.save(model.state_dict(), "mnist_cnn.pt")
+    if args.save_model:
+        dist.barrier()
+        states = model.state_dict()
+    if rank == 0:
+        torch.save(states, "mnist_cnn.pt")
     
     cleanup()
 
