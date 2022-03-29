@@ -79,7 +79,7 @@ def test(model, rank, world_size, test_loader):
         for batch in test_loader:
             for key in batch.keys():
                 batch[key] = batch[key].to(rank)
-            output = model(batch)
+            output = model(**batch)
             ddp_loss[0] += F.nll_loss(output["logits"], batch["labels"], reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             ddp_loss[1] += pred.eq(target.view_as(pred)).sum().item()
@@ -198,7 +198,7 @@ def ddp_main(rank, world_size, args):
 if __name__ == '__main__':
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-    parser.add_argument('--batch-size', type=int, default=16, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=8, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=16, metavar='N',
                         help='input batch size for testing (default: 1000)')
