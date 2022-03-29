@@ -82,7 +82,7 @@ def test(model, rank, world_size, test_loader):
             output = model(**batch)
             ddp_loss[0] += F.nll_loss(output["logits"], batch["labels"], reduction='sum').item()  # sum up batch loss
             pred = output["logits"].argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-            ddp_loss[1] += pred.eq(target.view_as(pred)).sum().item()
+            ddp_loss[1] += pred.eq(batch["labels"].view_as(pred)).sum().item()
             ddp_loss[2] += len(batch)
 
     dist.reduce(ddp_loss, 0, op=dist.ReduceOp.SUM)
