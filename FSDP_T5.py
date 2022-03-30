@@ -62,8 +62,11 @@ def train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler
         
         optimizer.zero_grad()
         output = model(input_ids=batch["source_ids"],attention_mask=batch["source_mask"],labels=batch["target_ids"] )
-      
-        loss = output.loss
+        print("##############################")
+        print(output.keys())
+        print("##############################")
+        print("##############################")
+        loss = output["loss"]
         loss.backward()
         optimizer.step()
         ddp_loss[0] += loss.item()
@@ -83,7 +86,7 @@ def test(model, rank, world_size, test_loader):
             for key in batch.keys():
                 batch[key] = batch[key].to(rank)
             output = model(input_ids=batch["source_ids"],attention_mask=batch["source_mask"],labels=batch["target_ids"])
-            ddp_loss[0] += output.loss.item()  # sum up batch loss
+            ddp_loss[0] += output["loss"].item()  # sum up batch loss
             pred = output.logits.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             ddp_loss[1] += pred.eq(batch["target_ids"].view_as(pred)).sum().item()
             ddp_loss[2] += len(batch)
@@ -143,7 +146,7 @@ def ddp_main(rank, world_size, args):
 
     model = model.to(rank)
     # model = DDP(model)
-    model = FSDP(model, fsdp_auto_wrap_policy=my_auto_wrap_policy)
+    model = FSDP(model)
 
 
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
