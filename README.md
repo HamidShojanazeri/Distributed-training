@@ -12,10 +12,10 @@ tar -xf aclImdb_v1.tar.gz
 python FSDP_BERT.py
 
 ```
-## DDP T5
+## FSDP T5
 
-To run T5 example with DDP for text_summerization
-* downlaod the WikiHow from [here](https://github.com/mahnazkoupaee/WikiHow-Dataset) into data folder
+To run T5 example with FSDP and DDP(just need to uncomment the DDP wrapping in the script) for text_summerization
+* downlaod the WikiHow from [here](https://github.com/mahnazkoupaee/WikiHow-Dataset) into *data* folder
 * Run the script
 ```
 python FSDP_T5.py
