@@ -15,7 +15,10 @@ python FSDP_BERT.py
 ## FSDP T5
 
 To run T5 example with FSDP and DDP(just need to uncomment the DDP wrapping in the script) for text_summerization
-* downlaod the WikiHow from [here](https://github.com/mahnazkoupaee/WikiHow-Dataset) into *data* folder
+* Download the two CSV files in [WikiHow](https://github.com/mahnazkoupaee/WikiHow-Dataset) dataset as linked below:
+* Dataset has basically there are two csv files that can be accessed and downloaded from below
+* [wikihowAll.csv](https://ucsb.app.box.com/s/ap23l8gafpezf4tq3wapr6u8241zz358) and [wikihowSep.csv](https://ucsb.app.box.com/s/7yq601ijl1lzvlfu4rjdbbxforzd2oag)
+* Create "data" folder and place the two files in the folder.
 * Run the script
 ```
 python FSDP_T5.py
