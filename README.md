@@ -12,6 +12,12 @@ tar -xf aclImdb_v1.tar.gz
 python FSDP_BERT.py
 
 ```
+For running BERT with Torchrun
+
+```
+torchrun --nnodes 1 --nproc_per_node 4  FSDP_BERT_torchrun.py
+
+```
 ## FSDP T5
 
 To run T5 example with FSDP and DDP(just need to uncomment the DDP wrapping in the script) for text_summerization
