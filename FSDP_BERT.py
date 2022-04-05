@@ -119,7 +119,7 @@ def read_imdb_split(split_dir):
 def ddp_main(rank, world_size, args):
 
     model_name = 'bert-base-uncased'
-    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=5)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     
