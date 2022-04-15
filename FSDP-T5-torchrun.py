@@ -47,13 +47,14 @@ def cleanup():
 
 def train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler=None):
     model.train()
-    ddp_loss = torch.zeros(2).to(rank)
+    local_rank = int(os.environ['LOCAL_RANK'])
+    ddp_loss = torch.zeros(2).to(local_rank)
   
     if sampler:
         sampler.set_epoch(epoch)
     for batch in train_loader:
         for key in batch.keys():
-            batch[key] = batch[key].to(rank)
+            batch[key] = batch[key].to(local_rank)
         # print("************************")
         # print("************************")
         # print("train_loder",type(batch), batch["source_ids"].size(), batch["source_mask"].size(),batch["target_ids"].size())
@@ -79,11 +80,12 @@ def train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler
 def test(model, rank, world_size, test_loader):
     model.eval()
     correct = 0
-    ddp_loss = torch.zeros(3).to(rank)
+    local_rank = int(os.environ['LOCAL_RANK'])
+    ddp_loss = torch.zeros(3).to(local_rank)
     with torch.no_grad():
         for batch in test_loader:
             for key in batch.keys():
-                batch[key] = batch[key].to(rank)
+                batch[key] = batch[key].to(local_rank)
             output = model(input_ids=batch["source_ids"],attention_mask=batch["source_mask"],labels=batch["target_ids"])
             ddp_loss[0] += output["loss"].item()  # sum up batch loss
             pred = output["logits"].argmax(dim=1, keepdim=True)  # get the index of the max log-probability
