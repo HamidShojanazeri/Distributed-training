@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torchvision import datasets, transforms
 from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer, AutoModelForSequenceClassification, AutoModelForCausalLM
 from transformers import AutoTokenizer, GPT2TokenizerFast
 from transformers import T5Tokenizer, T5ForConditionalGeneration
@@ -33,7 +32,6 @@ from pathlib import Path
 from nlp import load_metric
 from nlp import load_dataset
 from sklearn.model_selection import train_test_split
-from summerization_dataset import *
 from transformers.models.t5.modeling_t5 import T5Block
 from typing import Type
 def setup():
@@ -116,9 +114,6 @@ def ddp_main(args):
     model = T5ForConditionalGeneration.from_pretrained(model_name)
     tokenizer =  T5Tokenizer.from_pretrained(model_name)
 
-
-    setup()
-
     local_rank = int(os.environ['LOCAL_RANK'])
     rank = int(os.environ['RANK'])
     world_size = int(os.environ['WORLD_SIZE'])
@@ -135,7 +130,7 @@ def ddp_main(args):
     sampler1 = DistributedSampler(train_dataset, rank=rank, num_replicas=world_size, shuffle=True)
     sampler2 = DistributedSampler(val_dataset, rank=rank, num_replicas=world_size)
 
-
+    setup()
 
 
     train_kwargs = {'batch_size': args.batch_size, 'sampler': sampler1}
