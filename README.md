@@ -29,3 +29,9 @@ To run T5 example with FSDP and DDP(just need to uncomment the DDP wrapping in t
 python FSDP_T5.py
 
 ```
+For running T5 with Torchrun
+
+```
+torchrun --nnodes 1 --nproc_per_node 4  FSDP-T5-torchrun.py
+
+```
