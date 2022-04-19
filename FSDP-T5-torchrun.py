@@ -178,10 +178,10 @@ def ddp_main(args):
         print(f"{model}")
 
     if args.save_model:
-        dist.barrier()
         states = model.state_dict()
+        dist.barrier()
     if rank == 0:
-        torch.save(states, "mnist_cnn.pt")
+        torch.save(states, "T5_checkpoint.pt")
     
     cleanup()
 
