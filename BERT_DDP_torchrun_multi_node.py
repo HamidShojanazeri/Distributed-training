@@ -55,12 +55,7 @@ def train(args, model, rank, world_size, train_loader, optimizer, epoch, sampler
             batch[key] = batch[key].to(local_rank)
       
         optimizer.zero_grad()
-        output = model(**batch)
-        # print("************************")
-        # print("************************")
-        # print("train_loder",type(output), output)
-        # print("************************")
-        loss = F.nll_loss(output["logits"], batch["labels"], reduction='sum')
+        output = model(**batch)['loss']
         loss.backward()
         optimizer.step()
         ddp_loss[0] += loss.item()
@@ -81,7 +76,7 @@ def test(model, rank, world_size, test_loader):
             for key in batch.keys():
                 batch[key] = batch[key].to(local_rank)
             output = model(**batch)
-            ddp_loss[0] += F.nll_loss(output["logits"], batch["labels"], reduction='sum').item()  # sum up batch loss
+            ddp_loss[0] += output['loss']  # sum up batch loss
             pred = output["logits"].argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             ddp_loss[1] += pred.eq(batch["labels"].view_as(pred)).sum().item()
             ddp_loss[2] += len(batch)
